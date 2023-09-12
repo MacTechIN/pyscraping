@@ -501,8 +501,9 @@ dl_weather_dds
 print(f"현재 풍속: {wind_speed}, 현재 습도: {humidity}, 미세 먼지: {pm10}")
 
 
-# In[ ]:
-
+# In[ ]: 
+# 0912 수업 
+# No . 7 
 
 import requests  
 from bs4 import BeautifulSoup 
@@ -514,9 +515,9 @@ def get_weather_daum(location):
     url = search_url + search_query
     html_weather = requests.get(url).text
     time.sleep(2)    
-    soup_weather = BeautifulSoup(html_weather, "lxml")
+    soup_weather = BeautifulSoup(html_weather, "lxml") # 여기까지는 기본 
     
-    txt_temp = soup_weather.select_one('strong.txt_temp').get_text()
+    txt_temp = soup_weather.select_one('strong.txt_temp').get_text() # 온도 만따로 떨어져있어서 하나만 선택 ()
     txt_weather = soup_weather.select_one('span.txt_weather').get_text()
 
     dl_weather_dds = soup_weather.select('dl.dl_weather dd')
@@ -596,7 +597,7 @@ while True:
 # #### 주식 현재가 가져오기
 
 # [6장: 248페이지]
-
+# No. file 9 
 # In[ ]:
 
 
@@ -654,7 +655,7 @@ def get_current_stock_price(stock_code):
 
 stock_code = "005930"
 current_stock_price = get_current_stock_price(stock_code)
-current_stock_price
+print(current_stock_price)
 
 
 # In[ ]:
@@ -663,7 +664,7 @@ current_stock_price
 company_stock_codes = {"삼성전자": "005930", "현대차":"005380", "NAVER":"035420"}
 
 print("[현재 주식 가격(원)]")
-for company, stock_code in company_stock_codes.items():
+for company, stock_code in company_stock_codes.items(): #key(comapny), value (price)
     current_stock_price = get_current_stock_price(stock_code)
     print(f"{company}: {current_stock_price}")
 
@@ -682,7 +683,18 @@ base_url = "http://kind.krx.co.kr/corpgeneral/corpList.do"
 method = "download"
 url = "{0}?method={1}".format(base_url, method)
 
+#사이트 주소 확인 
+print(url)
+#%%
+#사이트에서 엑셀파일 다운로드후 폴더에 저장
+
+df = pd.read_excel("상장법인목록.xls", engine='openpyxl')
+
+
+#%%
+
 df = pd.read_html(url, header=0)[0]
+# df = pd.read_html(url,endoding ='cp949', header=0)[0] for windows system 
 
 with pd.option_context('display.max_columns',4): # 최대 4개까지 열이 표시하도록 설정
     pd.set_option("show_dimensions", False)      # 행과 열 개수 출력 안 하기
