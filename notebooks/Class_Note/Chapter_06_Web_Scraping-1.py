@@ -1010,7 +1010,6 @@ def get_stock_info(maket_type=None):
     url = "{0}?method={1}&marketType={2}".format(base_url, method, marketType)
 
     df = pd.read_html(url, header=0, encoding='cp949')[0]
-    
 	
     # 종목코드 열을 6자리 숫자로 표시된 문자열로 변환
 	df['종목코드']= df['종목코드'].apply(lambda x: f"{x:06d}") 
@@ -1181,8 +1180,9 @@ dfs = pd.read_html(url, header=1)
 # 행과 열의 최대 표시 개수를 임시로 설정
 with pd.option_context('display.max_rows',4, 'display.max_columns',6): 
     pd.set_option("show_dimensions", False) # 행과 열 개수 정보 숨기기
-    display(dfs[0])
+    display(dfs[0]) # print(dfs[0]) 동일 
 
+print(dfs[0].info())
 
 # [6장: 265페이지]
 
@@ -1199,7 +1199,7 @@ def get_exchange_rate_data(currency_code, last_page_num):
     base_url = "https://finance.naver.com/marketindex/exchangeDailyQuote.nhn"
 
     df = pd.DataFrame()
-
+	
     for page_num in range(1, last_page_num+1):
         url = f"{base_url}?marketindexCd={currency_code}&page={page_num}"
         dfs = pd.read_html(url, header=1)
@@ -1215,6 +1215,17 @@ def get_exchange_rate_data(currency_code, last_page_num):
         time.sleep(0.1) # 0.1초간 멈춤
         
     return df
+
+
+#%%
+# def get exchangerate function
+
+base_url = "https://finance.naver.com/marketindex/exchangeDailyQuote.nhn"
+df = pd.DataFrame()
+
+print("df : " , df , type(df) )
+
+#%%
 
 
 # [6장: 266페이지]
@@ -1242,7 +1253,9 @@ with pd.option_context('display.max_rows',4, 'display.max_columns',6):
     pd.set_option("show_dimensions", False) # 행과 열 개수 정보 숨기기
     display(df_eur.head())
 
-
+#%%
+#No. 14
+ 
 # ### 6.2.4 부동산 정보 가져오기
 
 # [6장: 269페이지]
@@ -1258,12 +1271,19 @@ page_num = 1
 url = f"{base_url}?page={page_num}"
 dfs = pd.read_html(url)
 
+print("url : ",url)
+
 df = dfs[0] # 리스트의 첫 번째 항목에 동향 보고서 제목 데이터가 있음
+
+"""
 
 # 행과 열의 최대 표시 개수를 임시로 설정
 with pd.option_context('display.max_rows',4, 'display.max_columns',6): 
     pd.set_option("show_dimensions", False) # 행과 열 개수 정보 숨기기
     display(df)
+"""
+
+display(df)
 
 
 # [6장: 270페이지]
@@ -1296,6 +1316,29 @@ def split_title_to_rates(df_org):
     return df_new[['등록일'] + regions + ['번호']] # DataFrame에서 필요한 열만 반환
 
 
+#%%
+
+df_new = df_org.copy()
+df_temp = df_new['제목'].str.replace('%', '') # 제목 문자열에서 % 제거
+df_temp = df_temp.str.replace('보합', '0')    # 제목 문자열에서 보합을 0으로 바꿈
+df_temp = df_temp.str.replace('보합세', '0')  # 제목 문자열에서 보합세를 0으로 바꿈
+   
+regions = ['전국', '서울', '수도권']    
+for region in regions:
+	df_temp = df_temp.str.replace(region, '') # 문자열에서 전국, 서울, 수도권 제거
+
+
+df_temp = df_temp.str.split(']', expand=True) # ]를 기준으로 열 분리
+df_temp = df_temp[1].str.split(',', expand=True) # ,를 기준으로 열 분리
+   
+df_temp = df_temp.astype(float)
+df_new[regions] = df_temp # 전국, 서울, 수도권 순서대로 DataFrame 데이터에 할당
+
+return df_new[['등록일'] + regions + ['번호']] # DataFrame에서 필요한 열만 반환
+
+
+
+
 # [6장: 271페이지]
 
 # In[ ]:
@@ -1307,6 +1350,8 @@ df_rate.head()                     # 앞의 일부만 출력
 
 # In[ ]:
 
+#부동산 정보 8페이지 스크레이핑 
+
 
 import pandas as pd
 
@@ -1315,7 +1360,7 @@ base_url = "https://land.naver.com/news/trendReport.naver"
 df_rates = pd.DataFrame() # 전체 데이터가 담길 DataFrame 데이터
 last_page_num = 8 # 가져올 데이터의 마지막 페이지 
 
-for page_num in range(1, last_page_num+1):
+for page_num in range(1, last_page_num+1):  # 페이지 1부터 8까지 
 
     url = f"{base_url}?page={page_num}"
     dfs = pd.read_html(url)

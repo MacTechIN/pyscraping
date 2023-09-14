@@ -15,225 +15,7 @@
 
 # #### JSON 데이터 변환 및 데이터 추출
 
-# [8장: 341페이지]
-
-# In[ ]:
-
-
-import json
-
-python_dict = {
-    "이름": "홍길동",
-    "나이": 25,
-    "거주지": "서울",
-    "신체정보": { #딕셔너리 안에 또 딕셔너리가 들어가는 개념 
-        "키": 175.4,
-        "몸무게": 71.2
-    },
-    "취미": [
-        "등산",
-        "자전거타기",
-        "독서"
-    ]
-}
-
-print("Json type;",type(python_dict)) 
-
-
-# In[ ]:
-
-
-json_data = json.dumps(python_dict)
-type(json_data)
-
-
-# [8장: 342페이지]
-
-# In[ ]:
-
-
-print(json_data)
-
-
-# In[ ]:
-
-
-json_data = json.dumps(python_dict, indent=3, sort_keys=True, ensure_ascii=False)
-print(json_data)
-
-
-# In[ ]:
-
-
-dict_data = json.loads(json_data) # JSON 데이터를 파이썬의 딕셔너리 타입으로 변환
-type(dict_data)
-
-
-# [8장: 343페이지]
-
-# In[ ]:
-
-
-dict_data['신체정보']['몸무게']
-
-
-# In[ ]:
-
-
-dict_data['취미']
-
-
-# In[ ]:
-
-
-dict_data['취미'][0]
-
-
-# ## 8.2 API 키 없이 시간 관련 데이터 가져오기 
-
-# ### 8.2.1 시간대 리스트와 현재 시각 데이터 가져오기
-
-# [8장: 345페이지]
-
-# In[ ]:
-
-
-import requests  
-import json
-
-url = "https://timeapi.io/api/TimeZone/AvailableTimeZones"
-
-r = requests.get(url)
-r.text[:70] # 문자열 중 앞의 일부만 출력
-# r.text    # 문자열 전체를 출력
-
-
-# [8장: 346페이지]
-
-# In[ ]:
-
-
-import requests  
-import json
-
-url = "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Seoul"
-
-r = requests.get(url)
-print(r.text) 
-
-
-# In[ ]:
-
-
-url = "https://timeapi.io/api/Time/current/zone" # 요청 주소
-parameters = {"timeZone": "Asia/Seoul"}          # 요청 매개 변수 생성
-
-r = requests.get(url, params=parameters)
-print(r.text) 
-
-
-# In[ ]:
-
-
-json_to_dict = json.loads(r.text)
-type(json_to_dict)
-
-
-# [8장: 347페이지]
-
-# In[ ]:
-
-
-json_to_dict = r.json() #JSON 형태의 데이터를 파이썬의 딕셔너리 타입으로 변환
-type(json_to_dict)
-
-
-# In[ ]:
-
-
-import requests
-import json
-
-url = "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Seoul"
-
-date_time_dict = requests.get(url).json()
-type(date_time_dict)
-
-
-# In[ ]:
-
-
-date_time_dict
-
-
-# [8장: 348페이지]
-
-# In[ ]:
-
-
-date_time_dict["dateTime"], date_time_dict["timeZone"], date_time_dict["dayOfWeek"]
-
-
-# ### 8.2.2 시간대 변환 데이터 가져오기
-
-# [8장: 349페이지]
-
-# In[ ]:
-
-
-import requests
-import json
-
-url = 'https://timeapi.io/api/Conversion/ConvertTimeZone' # 요청 주소
-
-from_time_zone = "Asia/Seoul"
-from_date_time = "2022-10-03 10:03:00"
-to_time_zone = "UTC" # GMT로 지정해도 결과는 동일
-
-headers = {"Content-Type": "application/json"}
-
-json_data = json.dumps({"fromTimeZone": from_time_zone,
-                        "dateTime": from_date_time,
-                        "toTimeZone": to_time_zone})
-
-r = requests.post(url, headers=headers, data=json_data) # POST 방법으로 요청해 응답받음
-ctz_json_to_dict = r.json()
-ctz_json_to_dict
-
-
-# [8장: 350페이지]
-
-# In[ ]:
-
-
-import requests
-import json
-
-url = 'https://timeapi.io/api/Conversion/ConvertTimeZone' # 요청 주소
-
-from_time_zone = "Asia/Seoul"
-from_date_time = "2022-10-03 10:03:00"
-to_time_zone = "GMT" # UTC로 지정해도 결과는 동일
-
-dict_data = {"fromTimeZone": from_time_zone,
-              "dateTime": from_date_time,
-              "toTimeZone": to_time_zone}
-
-r = requests.post(url, json=dict_data) # POST 방법으로 요청해 응답받음
-ctz_json_to_dict = r.json()
-ctz_json_to_dict
-
-
-# [8장: 351페이지]
-
-# In[ ]:
-
-
-dateTime = ctz_json_to_dict['conversionResult']['dateTime'] # 변환된 날짜와 시각 데이터를 추출
-to_date_time = f"{dateTime.split('T')[0]} {dateTime.split('T')[1]}"
-from_date_time, to_date_time
-
-
+#%%
 # ## 8.3 RSS 피드 데이터 가져오기
 
 # ### 8.3.1 RSS 문서의 구조 및 데이터 추출
@@ -241,7 +23,6 @@ from_date_time, to_date_time
 # [8장: 353페이지]
 
 # In[ ]:
-
 
 rss_simple_document = """<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
@@ -313,6 +94,10 @@ import feedparser
 query = "머신러닝"
 # RSS 서비스 주소
 rss_url = f'https://news.google.com/rss/search?q={query}&&hl=ko&gl=KR&ceid=KR:ko'
+
+print(rss_url)
+#%%
+
 rss_news = feedparser.parse(rss_url) # RSS 형식의 데이터를 파싱
 
 title = rss_news['feed']['title']
@@ -417,7 +202,7 @@ with open(file_name, 'w', encoding="utf-8") as f:
     
 print("생성한 파일:", file_name)
 
-
+#%%
 # ## 8.4 스포티파이를 이용한 노래 데이터 가져오기
 
 # ### 8.4.1 앱 만들고 액세스 토큰 생성
